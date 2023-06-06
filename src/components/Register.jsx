@@ -29,11 +29,14 @@ function Register() {
         },
         body: JSON.stringify({ username, email, password }),
       });
-      if (res.status === 4000 || !res) {
+
+      if (res.status === 200) {
+        window.alert("Registration successful");
+        navigate("/login");
+      } else if (res.status === 400 || !res) {
         window.alert("Already registered");
       } else {
-        window.alert("Registration successful");
-        navigate.push("/login");
+        window.alert(res.status);
       }
     } catch (err) {
       console.log(err);
