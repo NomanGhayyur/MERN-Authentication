@@ -32,7 +32,7 @@ userSchema.pre('save', async function (next) {
     if (this.isModified('password')) {
         this.password = bcryptjs.hashSync(this.password, 10)
     }
-    next()
+    next();
 })
 
 // Generating Token to verify user
@@ -48,6 +48,6 @@ userSchema.methods.generateToken = async function () {
 }
 
 // Create Model
-const Users = new mongoose.model('Users', userSchema)
+const Users = new mongoose.model('USER', userSchema)
 
 module.exports = Users
