@@ -1,6 +1,47 @@
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleInput = (event) => {
+    let name = event.target.name;
+    let value = event.target.value;
+
+    setUser({ ...user, [name]: value });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const { email, password } = user;
+
+    try {
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (res.status === 200) {
+        window.alert("Login successful");
+        navigate("/dashboard");
+      } else if (res.status === 400 || !res) {
+        window.alert("Invalid Credentials");
+      } else {
+        window.alert(res.status);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div>
       <div className="container shadow my-5">
@@ -20,9 +61,9 @@ function Login() {
           </div>
           <div className="col-md-6 p-5">
             <h1 className="display-6 fw-bolder mb-5">Login</h1>
-            <form>
+            <form onSubmit={handleSubmit} method="POST">
               <div className="mb-3">
-                <label for="exampleInputEmail1" className="form-label">
+                <label htmlFor="exampleInputEmail1" className="form-label">
                   Email address
                 </label>
                 <input
@@ -30,19 +71,25 @@ function Login() {
                   className="form-control"
                   id="exampleInputEmail1"
                   aria-describedby="emailHelp"
+                  name="email"
+                  value={user.email}
+                  onChange={handleInput}
                 />
                 <div id="emailHelp" className="form-text">
                   We'll never share your email with anyone else.
                 </div>
               </div>
               <div className="mb-3">
-                <label for="exampleInputPassword1" className="form-label">
+                <label htmlFor="exampleInputPassword1" className="form-label">
                   Password
                 </label>
                 <input
                   type="password"
                   className="form-control"
                   id="exampleInputPassword1"
+                  name="password"
+                  value={user.password}
+                  onChange={handleInput}
                 />
               </div>
               <div className="mb-3 form-check">
@@ -51,7 +98,7 @@ function Login() {
                   className="form-check-input"
                   id="exampleCheck1"
                 />
-                <label className="form-check-label" for="exampleCheck1">
+                <label className="form-check-label" htmlFor="exampleCheck1">
                   Remember me
                 </label>
               </div>
