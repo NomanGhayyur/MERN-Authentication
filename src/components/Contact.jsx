@@ -1,4 +1,49 @@
+import { useState } from "react";
+
 function Contact() {
+  const [msg, setMsg] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const handleInput = (event) => {
+    let name = event.target.name;
+    let value = event.target.value;
+
+    setMsg({ ...msg, [name]: value });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const { name, email, message } = msg;
+
+    try {
+      const res = await fetch("/message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      if (res.status === 200) {
+        window.alert("Message sent successfully");
+        setMsg({
+          name: "",
+          email: "",
+          message: "",
+        });
+      } else if (res.status === 400 || !res) {
+        window.alert("Mesage failed: Try again");
+      } else {
+        window.alert(res.status);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div>
       <section id="contact">
@@ -18,12 +63,13 @@ function Contact() {
                 src="/assets/contact/contact-1.jpg"
                 alt="Contact"
                 className="w-75 mt-5"
+                loading="lazy"
               />
             </div>
             <div className="col-md-6">
-              <form>
+              <form onSubmit={handleSubmit} method="POST">
                 <div className="mb-3">
-                  <label for="name" className="form-label">
+                  <label htmlFor="name" className="form-label">
                     Your Name
                   </label>
                   <input
@@ -31,10 +77,13 @@ function Contact() {
                     className="form-control"
                     id="name"
                     placeholder="John Smith"
+                    name="name"
+                    value={msg.name}
+                    onChange={handleInput}
                   />
                 </div>
                 <div className="mb-3">
-                  <label for="email" className="form-label">
+                  <label htmlFor="email" className="form-label">
                     Email address
                   </label>
                   <input
@@ -43,16 +92,26 @@ function Contact() {
                     id="email"
                     aria-describedby="emailHelp"
                     placeholder="example@example.com"
+                    name="email"
+                    value={msg.email}
+                    onChange={handleInput}
                   />
                   <div id="emailHelp" className="form-text">
                     We'll never share your email with anyone else.
                   </div>
                 </div>
                 <div className="mb-3">
-                  <label for="message" className="form-label">
+                  <label htmlFor="message" className="form-label">
                     Your Message
                   </label>
-                  <textarea className="form-control" id="message" rows={5} />
+                  <textarea
+                    className="form-control"
+                    id="message"
+                    rows={5}
+                    name="message"
+                    value={msg.message}
+                    onChange={handleInput}
+                  />
                 </div>
 
                 <button
